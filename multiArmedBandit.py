@@ -3,6 +3,7 @@ from numpy import random
 import matplotlib.pyplot as plt
 import pandas as pd
 import time
+import sys
 
 start_time = time.time()
 
@@ -54,9 +55,21 @@ number_of_steps = 1000
 arms: int = 10
 # random_selection_prob = 0.1
 random_selection_prob = 0.01
+
+# greedy method
+# random_selection_prob = 0.0
+
+print(f'number_of_runs = {number_of_runs}')
+print(f'number_of_steps = {number_of_steps}')
+print(f'arms = {arms}')
+print(f'random_selection_prob = {random_selection_prob}')
+
 average_rewards = [0]*number_of_steps
 
 for run in range(number_of_runs):
+    if run % 500 == 0:
+        sys.stdout.write("\r{}".format(run))
+        # print(f'{run}')
     bandit = Bandit(number_of_arms=arms)
     # print(bandit)
     # print(f'arm with max value is {bandit.arm_with_maximum_value()} with '
@@ -67,7 +80,10 @@ for run in range(number_of_runs):
     rewards = []
     for step in range(number_of_steps):
         # print(f'arm with max est value is {find_arm_with_max_estimated_value(sum_of_rewards, frequency)}')
-        if random.random() < random_selection_prob:
+        if step < arms:
+            # Try each arm once in the first steps
+            chosen_arm = step
+        elif random.random() < random_selection_prob:
             # choose arm randomly
             chosen_arm = random.randint(0, arms)
         else:
@@ -85,7 +101,7 @@ for run in range(number_of_runs):
         average_rewards[i] += rewards[i]
 
 average_rewards[:] = [x / number_of_runs for x in average_rewards]
-print(f'Time to execute data processing: {time.time() - start_time} seconds')
+print(f'\nTime to execute data processing: {time.time() - start_time} seconds')
 
 # print(f'Estimated values after {number_of_steps} steps:')
 # print(sum_of_rewards)
